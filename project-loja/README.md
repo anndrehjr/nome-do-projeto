@@ -19,10 +19,10 @@ Bem-vindo ao **Mugs & More**, um site de loja online para **produtos personaliza
 
 Aqui estão algumas imagens do site para você visualizar melhor o layout:
 
-![Imagem 1](public/imagem.png)  
+![Imagem 1](public/image.png)  
 *Exemplo de uma das páginas de produto.* 😍
 
-![Imagem 2](public/imagem2.png)  
+![Imagem 2](public/image2.png)  
 *Outro exemplo de layout do site.* 💻
 
 ---
