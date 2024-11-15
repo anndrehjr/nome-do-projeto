@@ -1,9 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Moon, Sun, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, ChevronLeft, ChevronRight, Instagram, Facebook, Twitter } from 'lucide-react';
 
-function ProductsPage({ isDarkMode, toggleDarkMode }) {
+function ProductsPage({ isDarkMode: initialIsDarkMode, toggleDarkMode: parentToggleDarkMode }) {
   const { collection } = useParams();
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Tenta obter a preferência de modo escuro do localStorage
+    const savedMode = localStorage.getItem('darkMode');
+    // Se existir, analisa o valor; caso contrário, usa o valor inicial
+    return savedMode ? JSON.parse(savedMode) : initialIsDarkMode;
+  });
+
+  useEffect(() => {
+    // Atualiza a classe do documento e o localStorage sempre que isDarkMode mudar
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(prevMode => !prevMode);
+    if (parentToggleDarkMode) {
+      parentToggleDarkMode();
+    }
+  };
 
   // Simulated products data for each collection
   const productsData = {
@@ -85,8 +108,6 @@ function ProductsPage({ isDarkMode, toggleDarkMode }) {
     ],
     // Other product collections here...
   };
-  
-
 
   const products = productsData[collection] || [];
 
@@ -114,25 +135,34 @@ function ProductsPage({ isDarkMode, toggleDarkMode }) {
   return (
     <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
       <div className="dark:bg-gray-900 transition-colors duration-200 min-h-screen">
-        {/* Fixed Navbar */}
-        <nav className="fixed top-0 left-0 right-0 bg-gray-900 dark:bg-gray-800 text-white shadow-md z-50">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <Link to="/" className="flex items-center text-white hover:text-gray-400">
-              <ArrowLeft size={20} className="mr-2" />
-              <span>Voltar</span>
-            </Link>
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-              aria-label="Alternar modo escuro"
-            >
-              {isDarkMode ? <Sun className="text-yellow-500" size={24} /> : <Moon className="text-gray-600" size={24} />}
-            </button>
+        {/* Enhanced Navbar */}
+        <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-md z-50">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-4">
+                <Link to="/" className="flex items-center hover:text-gray-600 dark:hover:text-gray-300">
+                  <ArrowLeft size={20} className="mr-2" />
+                  <span>Voltar</span>
+                </Link>
+                <Link to="/cadernos" className="hover:text-gray-600 dark:hover:text-gray-300">Cadernos</Link>
+                <Link to="/presentes" className="hover:text-gray-600 dark:hover:text-gray-300">Presentes</Link>
+                <Link to="/sobre" className="hover:text-gray-600 dark:hover:text-gray-300">Sobre</Link>
+              </div>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={toggleDarkMode}
+                  className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                  aria-label="Alternar modo escuro"
+                >
+                  {isDarkMode ? <Sun className="text-yellow-500" size={20} /> : <Moon className="text-gray-600" size={20} />}
+                </button>
+              </div>
+            </div>
           </div>
         </nav>
 
         {/* Main Content */}
-        <div className="pt-16 container mx-auto px-4 py-8">
+        <div className="pt-20 container mx-auto px-4 py-8">
           <h1 className="text-3xl font-semibold mb-8 text-gray-900 dark:text-white capitalize">
             {collection.replace('-', ' ')}
           </h1>
@@ -174,21 +204,44 @@ function ProductsPage({ isDarkMode, toggleDarkMode }) {
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="bg-gray-800 text-white py-8 mt-16">
-          <div className="container mx-auto text-center">
-            <div className="flex justify-center gap-6 mb-6">
-              <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-all duration-300">
-                Instagram
-              </a>
-              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-all duration-300">
-                Facebook
-              </a>
-              <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-all duration-300">
-                Twitter
-              </a>
+        {/* Enhanced Footer */}
+        <footer className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-8 mt-16">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-wrap justify-between">
+              <div className="w-full md:w-1/4 mb-6 md:mb-0">
+                <h3 className="text-lg font-semibold mb-2">Sobre Nós</h3>
+                <p className="text-sm">Mugs & More é sua loja online para cadernos, agendas e presentes personalizados.</p>
+              </div>
+              <div className="w-full md:w-1/4 mb-6 md:mb-0">
+                <h3 className="text-lg font-semibold mb-2">Links Rápidos</h3>
+                <ul className="text-sm">
+                  <li><Link to="/cadernos" className="hover:text-gray-900 dark:hover:text-white">Cadernos</Link></li>
+                  <li><Link to="/presentes" className="hover:text-gray-900 dark:hover:text-white">Presentes</Link></li>
+                  <li><Link to="/sobre" className="hover:text-gray-900 dark:hover:text-white">Sobre Nós</Link></li>
+                  <li><Link to="/contato" className="hover:text-gray-900 dark:hover:text-white">Contato</Link></li>
+                </ul>
+              </div>
+              <div className="w-full md:w-1/4 mb-6 md:mb-0">
+                <h3 className="text-lg font-semibold mb-2">Contato</h3>
+                <p className="text-sm">Email: contato@mugsandmore.com</p>
+                <p className="text-sm">Telefone: (11) 1234-5678</p>
+              </div>
+              <div className="w-full md:w-1/4">
+                <h3 className="text-lg font-semibold mb-2">Siga-nos</h3>
+                <div className="flex space-x-4">
+                  <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 dark:hover:text-white">
+                    <Instagram size={24} />
+                  </a>
+                  <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 dark:hover:text-white">
+                    <Facebook size={24} />
+                  </a>
+                  <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 dark:hover:text-white">
+                    <Twitter size={24} />
+                  </a>
+                </div>
+              </div>
             </div>
-            <div className="text-gray-400 text-sm">
+            <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-sm text-center">
               <p>&copy; 2024 Mugs & More. Todos os direitos reservados.</p>
             </div>
           </div>
